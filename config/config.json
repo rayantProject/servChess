@@ -1,0 +1,9 @@
+{
+    "name": "myapp",
+    "displayName": "MyApp",
+    "version": "1.0.0",
+    "output": {
+        "path": "./dist",
+        "filename": "main.bundle.js"
+    }
+}
