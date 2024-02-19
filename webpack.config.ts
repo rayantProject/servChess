@@ -6,6 +6,9 @@ import dotenv from 'dotenv-webpack';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import nodeExternals from 'webpack-node-externals';
 import eslintwebpackplugin from 'eslint-webpack-plugin';
+import HTMLWebpackPlugin from 'html-webpack-plugin';
+import FaviconsWebpackPlugin from 'favicons-webpack-plugin';
+
 
 
 export default (
@@ -38,6 +41,10 @@ export default (
                             }
                         }
                     ]
+                },
+                {
+                    test: /\.(png|svg|jpg|jpeg|gif|ico)$/i,
+                    type: 'asset/resource'
                 }
             ]
         },
@@ -45,11 +52,14 @@ export default (
 
         output: {
             path: path.resolve(__dirname, output.path),
-            filename: output.filename,
+            filename: output.jsBundle,
         },
         plugins : [
             new dotenv() as unknown as webpack.WebpackPluginInstance,
             new ForkTsCheckerWebpackPlugin(),
+            new HTMLWebpackPlugin({
+                template: './public/template.html',
+            }),
             new webpackShellPlugin({
                 onBuildStart : {
                     scripts: [
@@ -63,21 +73,30 @@ export default (
                 },
                 onBuildEnd: {
                     scripts: [
-                        `echo 'Build process complete, ${isProduction ? 'you can make yarn monit for monitor' : "[CTRL+C to close]"} '`,
+                        `echo 'Build process complete, [CTRL+C to close]'`,
                         // `pm2 start ${isProduction ? 'config/pm2/pm2.prod.config.js' : 'config/pm2/pm2.dev.config.js'}`
-                        isProduction ? 'pm2 start config/pm2/pm2.prod.config.js' :`nodemon ${output.path}/${output.filename}`,
-
+                        isProduction ? `echo your file is ready to be deployed in ${output.path}` :`http-server ./${output.path} -o -c-1 -p 3000`,
                     ],
                     blocking: false,
                     parallel: true
                 }
 
             }),
-
-
             new eslintwebpackplugin({
                 extensions: ['ts'],
                 exclude: ['node_modules', 'dist', 'build']
+            }),
+            new FaviconsWebpackPlugin({
+                logo: './public/favicon/favicon.ico',
+                prefix: 'icons/',
+                favicons: {
+                    appName: 'My App',
+                    appShortName: 'App',
+                    appDescription: 'This is my application',
+                    developerName: 'Me',
+                    background: '#ddd',
+                    theme_color: '#333',
+                }
             })
 
         ]

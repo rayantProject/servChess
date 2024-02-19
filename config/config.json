@@ -4,6 +4,7 @@
     "version": "1.0.0",
     "output": {
         "path": "./dist",
-        "filename": "main.bundle.js"
+        "jsBundle": "main.bundle.js",
+        "html": "index.html"
     }
 }
